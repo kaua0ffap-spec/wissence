@@ -1,0 +1,995 @@
+import "./App.css";
+import { motion } from "framer-motion";
+import { Menu, X, ArrowRight, ChevronDown, HeartPulse, ShieldCheck, UserCheck, CheckCircle2, Activity, ArrowUpRight, ClipboardCheck, FlaskConical, RotateCcw, TrendingUp, Trophy, BookOpenCheck, Crosshair, HeartHandshake, Stethoscope, Zap, Quote, Star, Clock, MapPin, MessageCircle, Navigation, Phone, Instagram } from "lucide-react";
+import { useEffect, useState } from "react";
+
+export const CLINIC = {
+  name: "Wissence",
+  fullName: "Clínica Wissence",
+  specialty: "Medicina Esportiva",
+  city: "Jundiaí - SP",
+  address: "Rua Rangel Pestana, 465 - Centro, Jundiaí - SP, 13201-000",
+  phoneDisplay: "(11) 5026-2905",
+  phoneHref: "tel:+551150262905",
+  whatsappNumber: "551150262905",
+  instagram: "https://instagram.com/clinicawissence",
+};
+
+export const waLink = (message) =>
+  `https://wa.me/${CLINIC.whatsappNumber}?text=${encodeURIComponent(message)}`;
+
+export const WA_DEFAULT = waLink(
+  "Olá! Vim pelo site da Clínica Wissence e gostaria de agendar uma consulta.",
+);
+
+export const MAPS_EMBED =
+  "https://www.google.com/maps?q=Rua%20Rangel%20Pestana%2C%20465%20-%20Centro%2C%20Jundia%C3%AD%20-%20SP%2C%2013201-000&output=embed";
+
+export const HOURS = [
+  { days: "Segunda a Sexta", time: "08:00 às 19:00" },
+  { days: "Sábado", time: "08:00 às 12:00" },
+  { days: "Domingo", time: "Fechado" },
+];
+
+export const MAPS_ROUTE =
+  "https://www.google.com/maps/dir/?api=1&destination=Rua+Rangel+Pestana,+465+-+Centro,+Jundia%C3%AD+-+SP,+13201-000";
+
+export const IMAGES = {
+  hero: "https://images.unsplash.com/photo-1552674605-db6ffd4facb5?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHw0fHxhdGhsZXRlJTIwcnVubmluZyUyMG1vdGlvbiUyMHNwb3J0cyUyMG1lZGljaW5lJTIwZXZhbHVhdGlvbnxlbnwwfHx8fDE3OTI5NzUxNzN8MA&ixlib=rb-4.1.0&q=85",
+  heroSecondary:
+    "https://images.unsplash.com/photo-1727094141271-9bea5bc8c757?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHwzfHxhdGhsZXRlJTIwcnVubmluZyUyMG1vdGlvbiUyMHNwb3J0cyUyMG1lZGljaW5lJTIwZXZhbHVhdGlvbnxlbnwwfHx8fDE3OTI5NzUxNzN8MA&ixlib=rb-4.1.0&q=85",
+  clinicInterior:
+    "https://images.unsplash.com/photo-1781513144825-aa1e284c5950?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2ODh8MHwxfHNlYXJjaHwyfHxtb2Rlcm4lMjBsdXh1cnklMjBtZWRpY2FsJTIwY2xpbmljJTIwaW50ZXJpb3IlMjBjb25zdWx0YXRpb258ZW58MHx8fHwxNzkyOTc1MTczfDA&ixlib=rb-4.1.0&q=85",
+  clinicWaiting:
+    "https://images.unsplash.com/photo-1759262151080-e05ba1c6294f?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2ODh8MHwxfHNlYXJjaHwxfHxtb2Rlcm4lMjBsdXh1cnklMjBtZWRpY2FsJTIwY2xpbmljJTIwaW50ZXJpb3IlMjBjb25zdWx0YXRpb258ZW58MHx8fHwxNzkyOTc1MTczfDA&ixlib=rb-4.1.0&q=85",
+  audiencePro:
+    "https://images.unsplash.com/photo-1744706908540-c7450689a30a?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHwyfHxhdGhsZXRlJTIwcnVubmluZyUyMG1vdGlvbiUyMHNwb3J0cyUyMG1lZGljaW5lJTIwZXZhbHVhdGlvbnxlbnwwfHx8fDE3OTI5NzUxNzN8MA&ixlib=rb-4.1.0&q=85",
+  audienceAmateur:
+    "https://images.unsplash.com/photo-1571008887538-b36bb32f4571?crop=entropy&cs=srgb&fm=jpg&ixid=M3w4NjAxODF8MHwxfHNlYXJjaHwxfHxhdGhsZXRlJTIwcnVubmluZyUyMG1vdGlvbiUyMHNwb3J0cyUyMG1lZGljaW5lJTIwZXZhbHVhdGlvbnxlbnwwfHx8fDE3OTI5NzUxNzN8MA&ixlib=rb-4.1.0&q=85",
+  audienceGym:
+    "https://images.unsplash.com/photo-1605296867724-fa87a8ef53fd?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHw0fHxneW0lMjB3b3Jrb3V0JTIwZml0bmVzcyUyMHRyYWluaW5nJTIwcnVubmVyJTIwYXRobGV0ZXxlbnwwfHx8fDE3OTI5NzUxNzN8MA&ixlib=rb-4.1.0&q=85",
+  audienceBeginner:
+    "https://images.unsplash.com/photo-1534258936925-c58bed479fcb?crop=entropy&cs=srgb&fm=jpg&ixid=M3w3NTY2NzF8MHwxfHNlYXJjaHwzfHxneW0lMjB3b3Jrb3V0JTIwZml0bmVzcyUyMHRyYWluaW5nJTIwcnVubmVyJTIwYXRobGV0ZXxlbnwwfHx8fDE3OTI5NzUxNzN8MA&ixlib=rb-4.1.0&q=85",
+};
+
+// ===== Reveal.jsx =====
+export const Reveal = ({ children, delay = 0, className, y = 32 }) => (
+  <motion.div
+    className={className}
+    initial={{ opacity: 0, y }}
+    whileInView={{ opacity: 1, y: 0 }}
+    viewport={{ once: true, margin: "-70px" }}
+    transition={{ duration: 0.75, delay, ease: [0.22, 1, 0.36, 1] }}
+  >
+    {children}
+  </motion.div>
+);
+
+// ===== Header.jsx =====
+const NAV = [
+  { label: "Início", href: "#inicio" },
+  { label: "A Clínica", href: "#clinica" },
+  { label: "Especialidades", href: "#especialidades" },
+  { label: "Contato", href: "#contato" },
+];
+
+export const Logo = ({ compact = false }) => (
+  <span className="flex items-center gap-2.5">
+    <span className="flex h-9 w-9 items-center justify-center overflow-hidden rounded-full ring-1 ring-[#E8DCCB]/40">
+      <img
+        src="/logo.png"
+        alt="Logotipo Wissence"
+        className="h-full w-full scale-[1.06] object-cover"
+      />
+    </span>
+    <span className="font-heading text-xl font-extrabold tracking-tight text-[#F8F5F0]">
+      Wissence
+      {!compact && (
+        <span className="ml-2 hidden text-[10px] font-medium uppercase tracking-[0.28em] text-[#E8DCCB]/60 sm:inline">
+          Medicina Esportiva
+        </span>
+      )}
+    </span>
+  </span>
+);
+
+export const Header = () => {
+  const [scrolled, setScrolled] = useState(false);
+  const [open, setOpen] = useState(false);
+
+  useEffect(() => {
+    const onScroll = () => setScrolled(window.scrollY > 24);
+    onScroll();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    return () => window.removeEventListener("scroll", onScroll);
+  }, []);
+
+  return (
+    <header
+      data-testid="site-header"
+      className={`fixed inset-x-0 top-0 z-50 transition-all duration-500 ${
+        scrolled
+          ? "border-b border-white/10 bg-[#382A22]/85 py-3 backdrop-blur-xl"
+          : "bg-transparent py-5"
+      }`}
+    >
+      <div className="mx-auto flex max-w-7xl items-center justify-between px-4 sm:px-6 lg:px-12">
+        <a href="#inicio" data-testid="logo-link">
+          <Logo />
+        </a>
+
+        <nav className="hidden items-center gap-8 lg:flex" aria-label="Navegação principal">
+          {NAV.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              data-testid={`nav-${item.href.slice(1)}`}
+              className="text-sm font-medium text-[#E8DCCB]/75 transition-colors duration-300 hover:text-[#E8DCCB]"
+            >
+              {item.label}
+            </a>
+          ))}
+          <a
+            href={WA_DEFAULT}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="header-cta-button"
+            className="rounded-full bg-[#E8DCCB] px-6 py-2.5 text-sm font-semibold text-[#382A22] shadow-lg shadow-black/20 transition-all duration-300 hover:-translate-y-0.5 hover:bg-[#F8F5F0]"
+          >
+            Agendar Consulta
+          </a>
+        </nav>
+
+        <button
+          data-testid="mobile-menu-toggle"
+          onClick={() => setOpen(!open)}
+          aria-label={open ? "Fechar menu" : "Abrir menu"}
+          className="flex h-10 w-10 items-center justify-center rounded-lg text-[#F8F5F0] ring-1 ring-[#E8DCCB]/25 lg:hidden"
+        >
+          {open ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
+        </button>
+      </div>
+
+      <div
+        className={`overflow-hidden transition-[max-height] duration-500 lg:hidden ${
+          open ? "max-h-96" : "max-h-0"
+        }`}
+      >
+        <nav className="mt-3 space-y-1 border-t border-white/10 bg-[#382A22]/95 px-4 py-4 backdrop-blur-xl sm:px-6">
+          {NAV.map((item) => (
+            <a
+              key={item.href}
+              href={item.href}
+              data-testid={`mobile-nav-${item.href.slice(1)}`}
+              onClick={() => setOpen(false)}
+              className="block rounded-lg px-3 py-3 text-base font-medium text-[#F8F5F0] transition-colors hover:bg-white/5 hover:text-[#E8DCCB]"
+            >
+              {item.label}
+            </a>
+          ))}
+          <a
+            href={WA_DEFAULT}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="mobile-cta-button"
+            className="mt-2 block rounded-full bg-[#E8DCCB] px-6 py-3 text-center text-sm font-semibold text-[#382A22]"
+          >
+            Agendar Consulta
+          </a>
+        </nav>
+      </div>
+    </header>
+  );
+};
+
+// ===== Hero.jsx =====
+const BADGES = [
+  { icon: ShieldCheck, label: "Prevenção de Lesões" },
+  { icon: HeartPulse, label: "Avaliação Cardiovascular" },
+  { icon: UserCheck, label: "Acompanhamento Individualizado" },
+];
+
+const fadeUp = (delay) => ({
+  initial: { opacity: 0, y: 36 },
+  animate: { opacity: 1, y: 0 },
+  transition: { duration: 0.9, delay, ease: [0.22, 1, 0.36, 1] },
+});
+
+export const Hero = () => (
+  <section
+    id="inicio"
+    data-testid="hero-section"
+    className="relative flex min-h-screen items-center overflow-hidden bg-[#382A22]"
+  >
+    <div className="absolute inset-0">
+      <img
+        src={IMAGES.hero}
+        alt="Atleta em movimento durante avaliação de medicina esportiva"
+        className="h-full w-full object-cover object-center"
+        loading="eager"
+      />
+      <div className="absolute inset-0 bg-gradient-to-r from-[#382A22] via-[#382A22]/85 to-[#382A22]/30" />
+      <div className="absolute inset-0 bg-gradient-to-t from-[#382A22] via-transparent to-[#382A22]/60" />
+    </div>
+
+    <div className="relative z-10 mx-auto w-full max-w-7xl px-4 pb-24 pt-36 sm:px-6 lg:px-12">
+      <motion.span
+        {...fadeUp(0.1)}
+        className="mb-6 inline-flex items-center gap-2 rounded-full border border-[#E8DCCB]/30 bg-[#E8DCCB]/10 px-4 py-1.5 text-xs font-semibold uppercase tracking-[0.25em] text-[#E8DCCB]"
+      >
+        Medicina Esportiva · Jundiaí - SP
+      </motion.span>
+
+      <motion.h1
+        {...fadeUp(0.25)}
+        className="font-heading max-w-3xl text-4xl font-extrabold leading-[1.08] tracking-tight text-[#F8F5F0] sm:text-5xl lg:text-6xl"
+      >
+        Seu potencial não tem limites.{" "}
+        <span className="text-[#E8DCCB]">Sua saúde é o ponto de partida.</span>
+      </motion.h1>
+
+      <motion.p
+        {...fadeUp(0.4)}
+        className="mt-6 max-w-2xl text-base leading-relaxed text-[#E8DCCB]/80 sm:text-lg"
+      >
+        Medicina esportiva especializada para quem busca mais saúde, melhor
+        desempenho e qualidade de vida em todas as fases da prática esportiva.
+      </motion.p>
+
+      <motion.div {...fadeUp(0.55)} className="mt-10 flex flex-col gap-4 sm:flex-row">
+        <a
+          href={WA_DEFAULT}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="hero-cta-agendar"
+          className="group inline-flex items-center justify-center gap-2 rounded-full bg-[#E8DCCB] px-8 py-4 text-sm font-bold uppercase tracking-wider text-[#382A22] shadow-xl shadow-black/25 transition-all duration-300 hover:-translate-y-1 hover:bg-[#F8F5F0]"
+        >
+          Agendar Consulta
+          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </a>
+        <a
+          href="#especialidades"
+          data-testid="hero-cta-especialidades"
+          className="inline-flex items-center justify-center gap-2 rounded-full border border-[#E8DCCB]/30 bg-white/5 px-8 py-4 text-sm font-bold uppercase tracking-wider text-[#F8F5F0] backdrop-blur-sm transition-all duration-300 hover:-translate-y-1 hover:border-[#E8DCCB]/60 hover:text-[#E8DCCB]"
+        >
+          Conheça Nossas Especialidades
+        </a>
+      </motion.div>
+
+      <motion.div
+        {...fadeUp(0.7)}
+        className="mt-14 flex flex-wrap gap-3"
+        data-testid="hero-badges"
+      >
+        {BADGES.map(({ icon: Icon, label }) => (
+          <span
+            key={label}
+            className="inline-flex items-center gap-2 rounded-full border border-white/10 bg-white/[0.06] px-4 py-2 text-xs font-medium text-[#F8F5F0]/90 backdrop-blur-md"
+          >
+            <Icon className="h-4 w-4 text-[#E8DCCB]" />
+            {label}
+          </span>
+        ))}
+      </motion.div>
+    </div>
+
+    <motion.a
+      href="#clinica"
+      aria-label="Rolar para a próxima seção"
+      data-testid="hero-scroll-indicator"
+      className="absolute bottom-8 left-1/2 z-10 -translate-x-1/2 text-[#E8DCCB]/50 transition-colors hover:text-[#E8DCCB]"
+      animate={{ y: [0, 8, 0] }}
+      transition={{ duration: 1.8, repeat: Infinity, ease: "easeInOut" }}
+    >
+      <ChevronDown className="h-6 w-6" />
+    </motion.a>
+  </section>
+);
+
+// ===== About.jsx =====
+const PILLARS = [
+  "Atendimento individualizado e acolhedor",
+  "Abordagem baseada em evidências científicas",
+  "Acompanhamento especializado em cada etapa",
+  "Integração entre saúde, prevenção e desempenho esportivo",
+];
+
+export const About = () => (
+  <section id="clinica" data-testid="about-section" className="bg-[#F8F5F0] py-20 lg:py-28">
+    <div className="mx-auto grid max-w-7xl items-center gap-14 px-4 sm:px-6 lg:grid-cols-2 lg:gap-20 lg:px-12">
+      <Reveal className="relative">
+        <div className="overflow-hidden rounded-2xl shadow-2xl shadow-[#382A22]/15 ring-1 ring-[#E8DCCB]">
+          <img
+            src="/clinica-fachada.jpg"
+            alt="Fachada da Clínica Wissence em Jundiaí - SP"
+            className="aspect-[4/3] w-full object-cover transition-transform duration-700 hover:scale-105"
+            loading="lazy"
+          />
+        </div>
+        <div className="absolute -bottom-6 -right-2 hidden rounded-xl bg-[#382A22] px-7 py-5 shadow-xl sm:block lg:-right-6">
+          <p className="font-heading text-2xl font-extrabold text-[#E8DCCB]">Wissence</p>
+          <p className="mt-1 text-xs font-medium uppercase tracking-[0.2em] text-[#E8DCCB]/60">
+            Excelência em Medicina do Esporte
+          </p>
+        </div>
+      </Reveal>
+
+      <div>
+        <Reveal>
+          <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.25em] text-[#766458]">
+            A Clínica
+          </span>
+          <h2 className="font-heading text-2xl font-bold leading-snug tracking-tight text-[#382A22] sm:text-3xl lg:text-4xl">
+            Cuidado médico especializado para quem vive o esporte
+          </h2>
+        </Reveal>
+        <Reveal delay={0.1}>
+          <p className="mt-6 text-base leading-relaxed text-[#766458]">
+            A <strong className="font-semibold text-[#382A22]">Wissence</strong> nasceu
+            do compromisso com a saúde e o bem-estar de atletas e praticantes de
+            atividade física de Jundiaí e região. Aqui, cada pessoa é recebida de
+            forma única: ouvimos sua história, entendemos seus objetivos e
+            construímos um plano de cuidado sob medida.
+          </p>
+          <p className="mt-4 text-base leading-relaxed text-[#766458]">
+            Unimos ciência, experiência clínica e acolhimento para que você pratique
+            esporte com segurança, previna lesões e alcance seu melhor desempenho —
+            seja qual for o seu ponto de partida.
+          </p>
+        </Reveal>
+        <Reveal delay={0.2}>
+          <ul className="mt-8 space-y-4">
+            {PILLARS.map((item) => (
+              <li key={item} className="flex items-start gap-3">
+                <CheckCircle2 className="mt-0.5 h-5 w-5 shrink-0 text-[#766458]" />
+                <span className="text-sm font-medium text-[#382A22] sm:text-base">{item}</span>
+              </li>
+            ))}
+          </ul>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+);
+
+// ===== Specialties.jsx =====
+const SPECIALTIES = [
+  {
+    icon: Activity,
+    title: "Medicina Esportiva",
+    description:
+      "Cuidado médico completo voltado à prática esportiva, unindo prevenção, diagnóstico e acompanhamento contínuo da sua saúde.",
+  },
+  {
+    icon: ClipboardCheck,
+    title: "Avaliação Física e Esportiva",
+    description:
+      "Análise detalhada da sua condição física para orientar treinos seguros e alinhados aos seus objetivos.",
+  },
+  {
+    icon: ShieldCheck,
+    title: "Prevenção de Lesões",
+    description:
+      "Identificação de fatores de risco e estratégias personalizadas para você treinar com mais segurança.",
+  },
+  {
+    icon: FlaskConical,
+    title: "Tratamento de Lesões Esportivas",
+    description:
+      "Conduta médica especializada no cuidado de lesões relacionadas ao esporte, com foco na sua recuperação.",
+  },
+  {
+    icon: Trophy,
+    title: "Acompanhamento de Atletas",
+    description:
+      "Suporte médico contínuo para atletas que buscam evolução de performance com saúde e consistência.",
+  },
+  {
+    icon: HeartPulse,
+    title: "Avaliação Cardiovascular para Prática Esportiva",
+    description:
+      "Avaliação criteriosa da saúde cardiovascular para liberar e orientar a prática esportiva com segurança.",
+  },
+  {
+    icon: RotateCcw,
+    title: "Orientação para Retorno ao Esporte",
+    description:
+      "Direcionamento médico para um retorno progressivo e seguro às atividades após lesões ou pausas.",
+  },
+  {
+    icon: TrendingUp,
+    title: "Acompanhamento de Saúde e Performance",
+    description:
+      "Monitoramento da sua saúde ao longo da jornada esportiva, unindo qualidade de vida e desempenho.",
+  },
+];
+
+export const Specialties = () => (
+  <section
+    id="especialidades"
+    data-testid="specialties-section"
+    className="bg-[#382A22] py-20 lg:py-28"
+  >
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <Reveal className="max-w-2xl">
+        <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.25em] text-[#E8DCCB]">
+          Especialidades e Serviços
+        </span>
+        <h2 className="font-heading text-2xl font-bold leading-snug tracking-tight text-[#F8F5F0] sm:text-3xl lg:text-4xl">
+          Cuidado completo para cada fase da sua jornada esportiva
+        </h2>
+        <p className="mt-5 text-base leading-relaxed text-[#E8DCCB]/70">
+          Da primeira avaliação ao retorno ao esporte, oferecemos um acompanhamento
+          médico integrado, pensado para a sua realidade.
+        </p>
+      </Reveal>
+
+      <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-2 lg:grid-cols-4">
+        {SPECIALTIES.map(({ icon: Icon, title, description }, i) => (
+          <Reveal key={title} delay={(i % 4) * 0.08}>
+            <article
+              data-testid={`specialty-card-${i}`}
+              className="group flex h-full flex-col rounded-xl border border-[#E8DCCB]/15 bg-white p-7 transition-all duration-500 hover:-translate-y-2 hover:border-[#E8DCCB]/50 hover:shadow-2xl hover:shadow-black/30"
+            >
+              <span className="mb-5 flex h-12 w-12 items-center justify-center rounded-lg bg-[#F8F5F0] text-[#382A22] ring-1 ring-[#E8DCCB] transition-colors duration-500 group-hover:bg-[#382A22] group-hover:text-[#E8DCCB]">
+                <Icon className="h-6 w-6" strokeWidth={1.8} />
+              </span>
+              <h3 className="font-heading text-lg font-semibold leading-snug text-[#382A22]">
+                {title}
+              </h3>
+              <p className="mt-3 flex-1 text-sm leading-relaxed text-[#766458]">
+                {description}
+              </p>
+              <a
+                href={waLink(
+                  `Olá! Vim pelo site da Clínica Wissence e gostaria de saber mais sobre: ${title}.`,
+                )}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid={`specialty-cta-${i}`}
+                className="mt-6 inline-flex items-center gap-1.5 text-sm font-semibold text-[#382A22] transition-colors hover:text-[#766458]"
+              >
+                Agendar Consulta
+                <ArrowUpRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-0.5 group-hover:-translate-y-0.5" />
+              </a>
+            </article>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+// ===== Differentials.jsx =====
+const ITEMS = [
+  {
+    icon: UserCheck,
+    title: "Atendimento Personalizado",
+    description: "Cada consulta é conduzida com tempo, escuta e atenção às suas necessidades.",
+  },
+  {
+    icon: Stethoscope,
+    title: "Profissionais Qualificados",
+    description: "Cuidado médico dedicado e especializado em saúde do esporte.",
+  },
+  {
+    icon: Crosshair,
+    title: "Abordagem Individualizada",
+    description: "Planos de cuidado construídos para o seu corpo, sua rotina e seus objetivos.",
+  },
+  {
+    icon: BookOpenCheck,
+    title: "Medicina Baseada em Evidências",
+    description: "Decisões clínicas fundamentadas na melhor ciência disponível.",
+  },
+  {
+    icon: Zap,
+    title: "Tecnologia e Avaliação Especializada",
+    description: "Recursos modernos de avaliação para um diagnóstico preciso.",
+  },
+  {
+    icon: HeartHandshake,
+    title: "Foco em Saúde e Qualidade de Vida",
+    description: "Performance importa, mas sua saúde vem sempre em primeiro lugar.",
+  },
+];
+
+export const Differentials = () => (
+  <section data-testid="differentials-section" className="bg-[#F8F5F0] py-20 lg:py-28">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <Reveal className="mx-auto max-w-2xl text-center">
+        <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.25em] text-[#766458]">
+          Nossos Diferenciais
+        </span>
+        <h2 className="font-heading text-2xl font-bold leading-snug tracking-tight text-[#382A22] sm:text-3xl lg:text-4xl">
+          O padrão de cuidado que você merece
+        </h2>
+      </Reveal>
+
+      <div className="mt-14 grid grid-cols-1 gap-px overflow-hidden rounded-2xl border border-[#E8DCCB] bg-[#E8DCCB] sm:grid-cols-2 lg:grid-cols-3">
+        {ITEMS.map(({ icon: Icon, title, description }, i) => (
+          <div
+            key={title}
+            data-testid={`differential-item-${i}`}
+            className="group bg-white p-8 transition-colors duration-500 hover:bg-[#382A22]"
+          >
+            <Reveal delay={(i % 3) * 0.08}>
+              <span className="mb-5 flex h-11 w-11 items-center justify-center rounded-lg bg-[#382A22]/[0.07] text-[#382A22] transition-colors duration-500 group-hover:bg-[#E8DCCB]/10 group-hover:text-[#E8DCCB]">
+                <Icon className="h-5 w-5" strokeWidth={1.9} />
+              </span>
+              <h3 className="font-heading text-lg font-semibold text-[#382A22] transition-colors duration-500 group-hover:text-[#F8F5F0]">
+                {title}
+              </h3>
+              <p className="mt-2 text-sm leading-relaxed text-[#766458] transition-colors duration-500 group-hover:text-[#E8DCCB]/75">
+                {description}
+              </p>
+            </Reveal>
+          </div>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+// ===== Audience.jsx =====
+const CATEGORIES = [
+  {
+    image: IMAGES.audiencePro,
+    alt: "Atleta profissional em treinamento de alto rendimento",
+    title: "Atletas Profissionais",
+    description:
+      "Acompanhamento médico de alto nível para sustentar performance, prevenir lesões e prolongar sua carreira.",
+  },
+  {
+    image: IMAGES.audienceAmateur,
+    alt: "Atleta amador correndo ao ar livre",
+    title: "Atletas Amadores",
+    description:
+      "Suporte especializado para evoluir nos treinos e competições com saúde, segurança e consistência.",
+  },
+  {
+    image: IMAGES.audienceGym,
+    alt: "Praticante de musculação em academia",
+    title: "Praticantes de Academia",
+    description:
+      "Avaliação e orientação médica para treinar com segurança, corrigir riscos e potencializar seus resultados.",
+  },
+  {
+    image: IMAGES.audienceBeginner,
+    alt: "Pessoa iniciando atividade física com orientação",
+    title: "Iniciando Atividade Física",
+    description:
+      "O ponto de partida ideal: avaliação médica completa para começar a se exercitar com segurança e confiança.",
+  },
+];
+
+export const Audience = () => (
+  <section data-testid="audience-section" className="bg-[#E8DCCB] py-20 lg:py-28">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <Reveal className="mx-auto max-w-2xl text-center">
+        <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.25em] text-[#766458]">
+          Para Quem É
+        </span>
+        <h2 className="font-heading text-2xl font-bold leading-snug tracking-tight text-[#382A22] sm:text-3xl lg:text-4xl">
+          A medicina esportiva é para todos que se movimentam
+        </h2>
+        <p className="mt-5 text-base leading-relaxed text-[#766458]">
+          Do alto rendimento ao primeiro treino, o acompanhamento médico transforma
+          a sua relação com o exercício.
+        </p>
+      </Reveal>
+
+      <div className="mt-14 grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-4">
+        {CATEGORIES.map(({ image, alt, title, description }, i) => (
+          <Reveal key={title} delay={(i % 4) * 0.08}>
+            <article
+              data-testid={`audience-card-${i}`}
+              className="group relative h-96 overflow-hidden rounded-xl ring-1 ring-[#382A22]/10"
+            >
+              <img
+                src={image}
+                alt={alt}
+                loading="lazy"
+                className="absolute inset-0 h-full w-full object-cover transition-transform duration-700 group-hover:scale-110"
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-[#382A22] via-[#382A22]/40 to-transparent" />
+              <div className="absolute inset-x-0 bottom-0 p-6">
+                <h3 className="font-heading text-lg font-semibold text-[#F8F5F0]">{title}</h3>
+                <p className="mt-2 text-sm leading-relaxed text-[#E8DCCB] opacity-0 transition-all duration-500 group-hover:opacity-100 sm:translate-y-2 sm:group-hover:translate-y-0">
+                  {description}
+                </p>
+              </div>
+            </article>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+// ===== Testimonials.jsx =====
+const REVIEWS = [
+  {
+    name: "Jéssica Miola",
+    when: "há 3 meses",
+    text: "Depois de passar por vários profissionais, encontrei aqui um atendimento que realmente faz diferença. O Dr. Léo e o Dr. Bruno são extremamente atenciosos, competentes e passam muita segurança em cada consulta. O atendimento é humanizado, sem pressa, com explicações claras e um cuidado genuíno com o paciente. Recomendo de olhos fechados!",
+  },
+  {
+    name: "Gislaine Cristina Trancolin",
+    when: "há 3 meses",
+    text: "Gostei muito desde o primeiro atendimento! Muitos prestativos, atenciosos e capacitados! Dr. Victor sempre me dá bastante atenção! Indico 100% a clínica!! Parabéns a equipe toda!!",
+  },
+  {
+    name: "Rodrigo Petrovich Medeiros",
+    when: "há 4 meses",
+    text: "Excelente experiência. Dr. Luis Gustavo e sua equipe são simplesmente nota 1000. Tratamento iniciado, com toda explicação e condução do processo, tenho certeza que em breve estarei com o corpo que desejo. Abraço a todos da Wissence.",
+  },
+];
+
+const Stars = () => (
+  <div className="flex gap-0.5" aria-label="Avaliação 5 de 5 estrelas">
+    {Array.from({ length: 5 }).map((_, i) => (
+      <Star key={i} className="h-4 w-4 fill-[#B08D57] text-[#B08D57]" />
+    ))}
+  </div>
+);
+
+export const Testimonials = () => (
+  <section data-testid="testimonials-section" className="bg-[#F8F5F0] py-20 lg:py-28">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <Reveal className="mx-auto max-w-2xl text-center">
+        <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.25em] text-[#766458]">
+          Depoimentos
+        </span>
+        <h2 className="font-heading text-2xl font-bold leading-snug tracking-tight text-[#382A22] sm:text-3xl lg:text-4xl">
+          O que nossos pacientes dizem
+        </h2>
+        <div className="mt-5 inline-flex items-center gap-2 rounded-full border border-[#E8DCCB] bg-white px-4 py-2">
+          <Stars />
+          <span className="text-sm font-semibold text-[#382A22]">5,0</span>
+          <span className="text-xs text-[#766458]">· Avaliações do Google</span>
+        </div>
+      </Reveal>
+
+      <div className="mt-14 grid grid-cols-1 gap-6 md:grid-cols-3">
+        {REVIEWS.map(({ name, when, text }, i) => (
+          <Reveal key={name} delay={i * 0.1}>
+            <figure
+              data-testid={`testimonial-card-${i}`}
+              className="flex h-full flex-col rounded-xl border border-[#E8DCCB] bg-white p-7 transition-all duration-500 hover:-translate-y-1.5 hover:shadow-xl hover:shadow-[#382A22]/10"
+            >
+              <Quote className="h-7 w-7 text-[#E8DCCB]" aria-hidden="true" />
+              <blockquote className="mt-4 flex-1 text-sm leading-relaxed text-[#766458]">
+                “{text}”
+              </blockquote>
+              <figcaption className="mt-6 border-t border-[#E8DCCB] pt-4">
+                <Stars />
+                <p className="mt-2 font-heading text-sm font-semibold text-[#382A22]">{name}</p>
+                <p className="text-xs text-[#766458]">{when} · Google</p>
+              </figcaption>
+            </figure>
+          </Reveal>
+        ))}
+      </div>
+    </div>
+  </section>
+);
+
+// ===== CtaBanner.jsx =====
+export const CtaBanner = () => (
+  <section data-testid="cta-banner" className="relative overflow-hidden bg-[#382A22] py-20 lg:py-28">
+    <div
+      aria-hidden="true"
+      className="absolute left-1/2 top-1/2 h-[480px] w-[720px] -translate-x-1/2 -translate-y-1/2 rounded-full bg-[#E8DCCB]/10 blur-[140px]"
+    />
+    <div className="relative mx-auto max-w-4xl px-4 text-center sm:px-6">
+      <Reveal>
+        <h2 className="font-heading text-2xl font-bold leading-snug tracking-tight text-[#F8F5F0] sm:text-3xl lg:text-4xl">
+          Cuide da sua saúde.{" "}
+          <span className="text-[#E8DCCB]">Supere seus limites com responsabilidade.</span>
+        </h2>
+        <p className="mx-auto mt-6 max-w-2xl text-base leading-relaxed text-[#E8DCCB]/80 sm:text-lg">
+          Tenha acompanhamento especializado para cuidar da sua saúde, prevenir
+          lesões e alcançar seus objetivos esportivos.
+        </p>
+        <a
+          href={WA_DEFAULT}
+          target="_blank"
+          rel="noopener noreferrer"
+          data-testid="cta-banner-button"
+          className="group mt-10 inline-flex items-center gap-2 rounded-full bg-[#E8DCCB] px-10 py-4 text-sm font-bold uppercase tracking-wider text-[#382A22] shadow-2xl shadow-black/25 transition-all duration-300 hover:-translate-y-1 hover:bg-[#F8F5F0]"
+        >
+          Agendar Minha Consulta
+          <ArrowRight className="h-4 w-4 transition-transform duration-300 group-hover:translate-x-1" />
+        </a>
+      </Reveal>
+    </div>
+  </section>
+);
+
+// ===== LocationContact.jsx =====
+const INFO_ICON =
+  "flex h-11 w-11 shrink-0 items-center justify-center rounded-lg bg-[#E8DCCB]/10 text-[#E8DCCB] ring-1 ring-[#E8DCCB]/20";
+
+export const LocationContact = () => (
+  <section id="contato" data-testid="contact-section" className="bg-[#F8F5F0] py-20 lg:py-28">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <Reveal className="max-w-2xl">
+        <span className="mb-3 block text-xs font-semibold uppercase tracking-[0.25em] text-[#766458]">
+          Localização e Contato
+        </span>
+        <h2 className="font-heading text-2xl font-bold leading-snug tracking-tight text-[#382A22] sm:text-3xl lg:text-4xl">
+          Estamos no centro de Jundiaí, perto de você
+        </h2>
+      </Reveal>
+
+      <div className="mt-12 grid gap-8 lg:grid-cols-5">
+        <Reveal className="lg:col-span-2">
+          <div className="flex h-full flex-col rounded-2xl bg-[#382A22] p-8 text-white shadow-xl lg:p-10">
+            <div className="space-y-7">
+              <div className="flex items-start gap-4">
+                <span className={INFO_ICON}>
+                  <MapPin className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-heading text-base font-semibold text-[#F8F5F0]">Endereço</h3>
+                  <p className="mt-1 text-sm leading-relaxed text-[#E8DCCB]/70">{CLINIC.address}</p>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <span className={INFO_ICON}>
+                  <Phone className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-heading text-base font-semibold text-[#F8F5F0]">Telefone e WhatsApp</h3>
+                  <a
+                    href={CLINIC.phoneHref}
+                    data-testid="contact-phone-link"
+                    className="mt-1 block text-sm text-[#E8DCCB]/70 transition-colors hover:text-[#E8DCCB]"
+                  >
+                    {CLINIC.phoneDisplay}
+                  </a>
+                </div>
+              </div>
+              <div className="flex items-start gap-4">
+                <span className={INFO_ICON}>
+                  <Clock className="h-5 w-5" />
+                </span>
+                <div>
+                  <h3 className="font-heading text-base font-semibold text-[#F8F5F0]">Horários de Atendimento</h3>
+                  <ul className="mt-1 space-y-1 text-sm text-[#E8DCCB]/70">
+                    {HOURS.map(({ days, time }) => (
+                      <li key={days} className="flex justify-between gap-4">
+                        <span>{days}</span>
+                        <span className="font-medium text-[#E8DCCB]">{time}</span>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+              </div>
+            </div>
+
+            <div className="mt-10 flex flex-col gap-3">
+              <a
+                href={WA_DEFAULT}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="contact-whatsapp-button"
+                className="inline-flex items-center justify-center gap-2 rounded-full bg-[#25D366] px-6 py-3.5 text-sm font-bold text-[#382A22] transition-all duration-300 hover:-translate-y-0.5 hover:brightness-110"
+              >
+                <MessageCircle className="h-4 w-4" />
+                Agendar pelo WhatsApp
+              </a>
+              <a
+                href={MAPS_ROUTE}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="contact-route-button"
+                className="inline-flex items-center justify-center gap-2 rounded-full border border-[#E8DCCB]/25 px-6 py-3.5 text-sm font-semibold text-[#F8F5F0] transition-all duration-300 hover:-translate-y-0.5 hover:border-[#E8DCCB]/60 hover:text-[#E8DCCB]"
+              >
+                <Navigation className="h-4 w-4" />
+                Traçar Rota
+              </a>
+            </div>
+          </div>
+        </Reveal>
+
+        <Reveal delay={0.12} className="lg:col-span-3">
+          <div className="h-full min-h-[380px] overflow-hidden rounded-2xl bg-white shadow-xl ring-1 ring-[#E8DCCB]">
+            <iframe
+              title="Mapa da Clínica Wissence - Rua Rangel Pestana, 465, Centro, Jundiaí - SP"
+              data-testid="contact-map"
+              src={MAPS_EMBED}
+              className="h-full min-h-[380px] w-full border-0"
+              loading="lazy"
+              referrerPolicy="no-referrer-when-downgrade"
+              allowFullScreen
+            />
+          </div>
+        </Reveal>
+      </div>
+    </div>
+  </section>
+);
+
+// ===== Footer.jsx =====
+const QUICK_LINKS = [
+  { label: "Início", href: "#inicio" },
+  { label: "A Clínica", href: "#clinica" },
+  { label: "Especialidades", href: "#especialidades" },
+  { label: "Contato", href: "#contato" },
+];
+
+const SPECIALTY_LINKS = [
+  "Medicina Esportiva",
+  "Avaliação Física e Esportiva",
+  "Prevenção de Lesões",
+  "Tratamento de Lesões Esportivas",
+  "Acompanhamento de Atletas",
+  "Saúde e Performance",
+];
+
+export const Footer = () => (
+  <footer data-testid="site-footer" className="border-t border-white/10 bg-[#382A22] pb-10 pt-16">
+    <div className="mx-auto max-w-7xl px-4 sm:px-6 lg:px-12">
+      <div className="grid gap-12 md:grid-cols-2 lg:grid-cols-4">
+        <div>
+          <a href="#inicio" data-testid="footer-logo">
+            <Logo compact />
+          </a>
+          <p className="mt-5 max-w-xs text-sm leading-relaxed text-[#E8DCCB]/70">
+            Clínica de medicina esportiva em Jundiaí dedicada à saúde, à prevenção
+            de lesões e ao desempenho de atletas e praticantes de atividade física.
+          </p>
+          <a
+            href={CLINIC.instagram}
+            target="_blank"
+            rel="noopener noreferrer"
+            data-testid="footer-instagram-link"
+            className="mt-6 inline-flex items-center gap-2 text-sm font-medium text-[#E8DCCB]/80 transition-colors hover:text-[#E8DCCB]"
+          >
+            <span className="flex h-9 w-9 items-center justify-center rounded-lg bg-white/[0.06] ring-1 ring-white/10">
+              <Instagram className="h-4 w-4" />
+            </span>
+            @clinicawissence
+          </a>
+        </div>
+
+        <nav aria-label="Links rápidos">
+          <h3 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-[#F8F5F0]">
+            Links Rápidos
+          </h3>
+          <ul className="mt-5 space-y-3">
+            {QUICK_LINKS.map((link) => (
+              <li key={link.href}>
+                <a
+                  href={link.href}
+                  data-testid={`footer-link-${link.href.slice(1)}`}
+                  className="text-sm text-[#E8DCCB]/60 transition-colors hover:text-[#E8DCCB]"
+                >
+                  {link.label}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <nav aria-label="Especialidades">
+          <h3 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-[#F8F5F0]">
+            Especialidades
+          </h3>
+          <ul className="mt-5 space-y-3">
+            {SPECIALTY_LINKS.map((item) => (
+              <li key={item}>
+                <a
+                  href="#especialidades"
+                  className="text-sm text-[#E8DCCB]/60 transition-colors hover:text-[#E8DCCB]"
+                >
+                  {item}
+                </a>
+              </li>
+            ))}
+          </ul>
+        </nav>
+
+        <div>
+          <h3 className="font-heading text-sm font-semibold uppercase tracking-[0.2em] text-[#F8F5F0]">
+            Contato
+          </h3>
+          <ul className="mt-5 space-y-4 text-sm text-[#E8DCCB]/70">
+            <li className="flex items-start gap-3">
+              <MapPin className="mt-0.5 h-4 w-4 shrink-0 text-[#E8DCCB]" />
+              <span>{CLINIC.address}</span>
+            </li>
+            <li>
+              <a
+                href={CLINIC.phoneHref}
+                data-testid="footer-phone-link"
+                className="flex items-center gap-3 transition-colors hover:text-[#E8DCCB]"
+              >
+                <Phone className="h-4 w-4 shrink-0 text-[#E8DCCB]" />
+                {CLINIC.phoneDisplay}
+              </a>
+            </li>
+            <li className="flex items-start gap-3">
+              <Clock className="mt-0.5 h-4 w-4 shrink-0 text-[#E8DCCB]" />
+              <span>
+                Seg a Sex: 08:00 às 19:00
+                <br />
+                Sáb: 08:00 às 12:00
+              </span>
+            </li>
+            <li>
+              <a
+                href={WA_DEFAULT}
+                target="_blank"
+                rel="noopener noreferrer"
+                data-testid="footer-whatsapp-link"
+                className="text-[#E8DCCB] transition-colors hover:text-white"
+              >
+                Agendar pelo WhatsApp
+              </a>
+            </li>
+          </ul>
+        </div>
+      </div>
+
+      <div className="mt-14 border-t border-white/10 pt-8 text-center">
+        <p className="text-xs text-[#E8DCCB]/40">
+          © {new Date().getFullYear()} Clínica Wissence · Medicina Esportiva · Jundiaí - SP.
+          Todos os direitos reservados.
+        </p>
+      </div>
+    </div>
+  </footer>
+);
+
+// ===== FloatingWhatsApp.jsx =====
+const WhatsAppIcon = () => (
+  <svg viewBox="0 0 24 24" fill="currentColor" className="h-6 w-6" aria-hidden="true">
+    <path d="M12.04 2c-5.46 0-9.91 4.45-9.91 9.91 0 1.75.46 3.45 1.32 4.95L2.05 22l5.25-1.38a9.87 9.87 0 0 0 4.74 1.21c5.46 0 9.91-4.45 9.91-9.91S17.5 2 12.04 2zm0 18.03a8.1 8.1 0 0 1-4.13-1.13l-.3-.18-3.07.81.82-3-.2-.31a8.08 8.08 0 1 1 6.88 3.81zm4.44-6.06c-.24-.12-1.44-.71-1.66-.79-.22-.08-.39-.12-.55.12-.16.24-.63.79-.77.95-.14.16-.28.18-.53.06-.24-.12-1.02-.38-1.95-1.2-.72-.64-1.2-1.43-1.35-1.67-.14-.24-.01-.37.11-.5.11-.11.24-.28.37-.42.12-.14.16-.24.24-.4.08-.16.04-.31-.02-.43-.06-.12-.55-1.32-.75-1.81-.2-.48-.4-.41-.55-.42h-.47c-.16 0-.43.06-.65.31-.22.24-.86.84-.86 2.05 0 1.21.88 2.37 1 2.53.12.16 1.72 2.63 4.18 3.69.58.25 1.04.4 1.4.52.59.19 1.12.16 1.54.1.47-.07 1.44-.59 1.64-1.16.2-.57.2-1.05.14-1.16-.06-.1-.22-.16-.46-.28z" />
+  </svg>
+);
+
+export const FloatingWhatsApp = () => (
+  <motion.a
+    href={WA_DEFAULT}
+    target="_blank"
+    rel="noopener noreferrer"
+    data-testid="floating-whatsapp-button"
+    aria-label="Agendar consulta pelo WhatsApp"
+    title="Agendar consulta pelo WhatsApp"
+    className="fixed bottom-6 right-6 z-50 flex h-14 w-14 items-center justify-center rounded-full bg-[#25D366] text-white shadow-2xl shadow-emerald-500/40 transition-transform duration-300 hover:scale-110"
+    initial={{ opacity: 0, scale: 0.5 }}
+    animate={{ opacity: 1, scale: 1 }}
+    transition={{ delay: 1.2, duration: 0.5, ease: [0.22, 1, 0.36, 1] }}
+  >
+    <span className="absolute inset-0 animate-ping rounded-full bg-[#25D366]/40 [animation-duration:2.5s]" />
+    <span className="relative">
+      <WhatsAppIcon />
+    </span>
+  </motion.a>
+);
+
+// ===== App.jsx =====
+function App() {
+  return (
+    <div className="min-h-screen bg-[#382A22] font-body antialiased">
+      <Header />
+      <main>
+        <Hero />
+        <About />
+        <Specialties />
+        <Differentials />
+        <Audience />
+        <Testimonials />
+        <CtaBanner />
+        <LocationContact />
+      </main>
+      <Footer />
+      <FloatingWhatsApp />
+    </div>
+  );
+}
+
+export default App;
